@@ -1,12 +1,21 @@
-from enum import Enum
+from enum import IntEnum, Enum
 
 
-class MoveClassification(Enum):
-    TOP_ENGINE_MOVE = "TOP_ENGINE_MOVE"
-    GOOD_MOVE = "GOOD_MOVE"
-    INACCURACY = "INACCURACY"
-    MISTAKE = "MISTAKE"
-    BLUNDER = "BLUNDER"
+class MoveClassification(IntEnum):
+    TOP_ENGINE_MOVE = 0
+    GOOD_MOVE = 1
+    INACCURACY = 2
+    MISTAKE = 3
+    BLUNDER = 4
+
+    def to_friendly_string(self):
+        return {
+            MoveClassification.TOP_ENGINE_MOVE: "Top Engine Move",
+            MoveClassification.GOOD_MOVE: "Good Move",
+            MoveClassification.INACCURACY: "Inaccuracy",
+            MoveClassification.MISTAKE: "Mistake",
+            MoveClassification.BLUNDER: "Blunder"
+        }[self]
 
 
 class Color(Enum):
