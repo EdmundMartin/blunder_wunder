@@ -1,0 +1,2 @@
+class ChessComClient:
+    pass

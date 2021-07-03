@@ -7,3 +7,8 @@ class MoveClassification(Enum):
     INACCURACY = "INACCURACY"
     MISTAKE = "MISTAKE"
     BLUNDER = "BLUNDER"
+
+
+class Color(Enum):
+    WHITE = "WHITE"
+    BLACK = "BLACK"
