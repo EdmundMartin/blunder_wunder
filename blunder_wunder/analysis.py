@@ -22,13 +22,15 @@ def evaluate_for_white(engine: computer.SimpleEngine, board, depth: computer.Lim
 def classify_move(difference: int) -> MoveClassification:
     if difference == 0:
         return MoveClassification.TOP_ENGINE_MOVE
+    elif difference < 25:
+        return MoveClassification.EXCELLENT_MOVE
     elif difference < 50:
         return MoveClassification.GOOD_MOVE
-    elif 50 <= difference < 150:
+    elif difference < 150:
         return MoveClassification.INACCURACY
-    elif 150 <= difference < 250:
+    elif difference < 250:
         return MoveClassification.MISTAKE
-    elif difference >= 250:
+    else:
         return MoveClassification.BLUNDER
 
 
@@ -52,7 +54,7 @@ class GameAnalysis:
 
     def evaluate_mate(self, post_move, post_engine_move):
         if post_move.is_mate() and not post_engine_move.is_mate():
-            return MoveClassification.MISTAKE
+            return MoveClassification.BLUNDER
         return MoveClassification.GOOD_MOVE
 
     def _analyse_move(self, engine: computer.SimpleEngine, board, move) -> AnalysedMove:
@@ -107,13 +109,3 @@ class GameAnalysis:
 
     def analyse_game_from_pgn_str(self, pgn_content: str) -> AnalysedGame:
         return self.analyse_game(pgn.read_game(io.StringIO(pgn_content)))
-
-
-if __name__ == "__main__":
-    analyzer = GameAnalysis("/usr/local/bin/stockfish", depth=2)
-    analyzed_game = analyzer.analyse_game_from_pgn(
-        "/Users/edmundmartin/PycharmProjects/blunder_wunder/test_pgn",
-    )
-    mistakes = analyzed_game.list_mistakes()
-    print(mistakes)
-    analyzed_game.write_to_pgn_name_from_metadata()

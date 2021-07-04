@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import List, Optional
-from uuid import uuid4
 
 from chess.pgn import Game
 import chess
 
 from blunder_wunder.types import MoveClassification, Color
+from blunder_wunder.utils import pgn_title_from_metadata
 
 
 @dataclass
@@ -53,7 +53,7 @@ class AnalysedGame:
             outfile.write(str(game))
 
     def write_to_pgn_name_from_metadata(self):
-        filename = f'{self.metadata["White"]}_{self.metadata["Black"]}_{self.metadata["Date"]}_{str(uuid4())}.pgn'
+        filename = pgn_title_from_metadata(self.metadata)
         self.write_to_pgn(filename)
 
     def list_inaccuracies(self, player_name: Optional[str] = None) -> List[AnalysedMove]:
