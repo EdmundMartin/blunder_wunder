@@ -25,18 +25,25 @@ class ChessComClient:
         self.analyzer = GameAnalysis(engine_path, depth)
 
     @staticmethod
-    def save_pgns_for_player(player_name: str, year: int, month: int, output_folder: str):
+    def save_pgns_for_player(
+        player_name: str, year: int, month: int, output_folder: str
+    ):
         url = ChessComClient.GAME_URL.format(player_name, year, _pad_int(month))
         response = requests.get(url).json()
         for game in response["games"]:
-            new_pgn = chess.pgn.read_game(io.StringIO(game['pgn']))
-            with open(os.path.join(output_folder, pgn_title_from_metadata(new_pgn.headers)), 'w') as output:
+            new_pgn = chess.pgn.read_game(io.StringIO(game["pgn"]))
+            with open(
+                os.path.join(output_folder, pgn_title_from_metadata(new_pgn.headers)),
+                "w",
+            ) as output:
                 output.write(str(new_pgn))
 
-    def analyse_games_for_player(self, player_name: str, year: int, month: int) -> List[AnalysedGame]:
+    def analyse_games_for_player(
+        self, player_name: str, year: int, month: int
+    ) -> List[AnalysedGame]:
         url = self.GAME_URL.format(player_name, year, _pad_int(month))
         response = requests.get(url).json()
         analyzed_games: List[AnalysedGame] = []
         for game in response["games"]:
-            analyzed_games.append(self.analyzer.analyse_game_from_pgn_str(game['pgn']))
+            analyzed_games.append(self.analyzer.analyse_game_from_pgn_str(game["pgn"]))
         return analyzed_games

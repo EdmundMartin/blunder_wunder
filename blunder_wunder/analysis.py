@@ -25,7 +25,9 @@ def color_from_board(board):
     return Color.WHITE if board.turn else Color.BLACK
 
 
-def evaluate_for_white(engine: computer.SimpleEngine, board, depth: computer.Limit) -> EngineInfo:
+def evaluate_for_white(
+    engine: computer.SimpleEngine, board, depth: computer.Limit
+) -> EngineInfo:
     raw = engine.analyse(board, depth)
     return EngineInfo(raw["score"].white(), raw.get("pv", list()), raw["score"])
 
@@ -45,7 +47,9 @@ def classify_move(difference: int) -> MoveClassification:
         return MoveClassification.BLUNDER
 
 
-def determine_move_strength(color, human_move, engine_move, classifier: MOVE_CLASSIFIER):
+def determine_move_strength(
+    color, human_move, engine_move, classifier: MOVE_CLASSIFIER
+):
     if color == color.BLACK:
         difference = human_move - engine_move
         return classify_move(difference)
@@ -54,13 +58,24 @@ def determine_move_strength(color, human_move, engine_move, classifier: MOVE_CLA
 
 
 class GameAnalysis:
-    def __init__(self, engine_path: str, depth: int = 20,  time_limit: Optional[int] = None,
-                 move_classifier: Optional[MOVE_CLASSIFIER] = None):
+    def __init__(
+        self,
+        engine_path: str,
+        depth: int = 20,
+        time_limit: Optional[int] = None,
+        move_classifier: Optional[MOVE_CLASSIFIER] = None,
+    ):
         self.engine_path = engine_path
         self.config = None
-        self.depth = computer.Limit(depth=depth) if time_limit is None else computer.Limit(time=time_limit)
+        self.depth = (
+            computer.Limit(depth=depth)
+            if time_limit is None
+            else computer.Limit(time=time_limit)
+        )
         self._best_line = None
-        self._move_classifier = classify_move if move_classifier is None else move_classifier
+        self._move_classifier = (
+            classify_move if move_classifier is None else move_classifier
+        )
 
     def _is_mate(self, first_eval, second_eval) -> bool:
         return first_eval.is_mate() or second_eval.is_mate()
@@ -81,9 +96,16 @@ class GameAnalysis:
         copied_board.push(best_engine_move.move)
         computer_eval: EngineInfo = evaluate_for_white(engine, copied_board, self.depth)
         if self._is_mate(human_eval.white_score, computer_eval.white_score):
-            classification = self.evaluate_mate(human_eval.white_score, computer_eval.white_score)
+            classification = self.evaluate_mate(
+                human_eval.white_score, computer_eval.white_score
+            )
         else:
-            classification = determine_move_strength(current_color, human_eval.white_score.score(), computer_eval.white_score.score(), self._move_classifier)
+            classification = determine_move_strength(
+                current_color,
+                human_eval.white_score.score(),
+                computer_eval.white_score.score(),
+                self._move_classifier,
+            )
         analyzed_move = AnalysedMove(
             pre_move_fen,
             post_move_fen,
@@ -92,7 +114,7 @@ class GameAnalysis:
             str(best_engine_move.move),
             classification,
             human_eval.pov,
-            self._best_line
+            self._best_line,
         )
         self._best_line = human_eval.suggested_line
         return analyzed_move
@@ -114,7 +136,9 @@ class GameAnalysis:
         engine.close()
         return analysed_game
 
-    def analyse_game_from_pgn(self, pgn_file_path: str, color: Optional[Color] = None) -> AnalysedGame:
+    def analyse_game_from_pgn(
+        self, pgn_file_path: str, color: Optional[Color] = None
+    ) -> AnalysedGame:
         with open(pgn_file_path, "r") as pgn_file:
             game = pgn.read_game(pgn_file)
         return self.analyse_game(game, color)

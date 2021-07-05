@@ -36,7 +36,7 @@ def _calculate_accuracy(moves: List[AnalysedMove]) -> AccuracySummary:
         MoveClassification.GOOD_MOVE: 9,
         MoveClassification.INACCURACY: 5,
         MoveClassification.MISTAKE: 2,
-        MoveClassification.BLUNDER: 1
+        MoveClassification.BLUNDER: 1,
     }
     white_scores = []
     black_scores = []
@@ -45,16 +45,21 @@ def _calculate_accuracy(moves: List[AnalysedMove]) -> AccuracySummary:
             white_scores.append(move_accuracy[move.classification])
         else:
             black_scores.append(move_accuracy[move.classification])
-    return {"white": 100 * float(sum(white_scores)) / float(10 * len(white_scores)),
-            "black": 100 * float(sum(black_scores)) / float(10 * len(black_scores))}
+    return {
+        "white": 100 * float(sum(white_scores)) / float(10 * len(white_scores)),
+        "black": 100 * float(sum(black_scores)) / float(10 * len(black_scores)),
+    }
 
 
 class AnalysedGame:
-
-    def __init__(self, game_metadata, accuracy_function: Optional[ACCURACY_FUNCTION] = None):
+    def __init__(
+        self, game_metadata, accuracy_function: Optional[ACCURACY_FUNCTION] = None
+    ):
         self.metadata = game_metadata
         self.moves: List[AnalysedMove] = []
-        self._accuracy_func: ACCURACY_FUNCTION = _calculate_accuracy if accuracy_function is None else accuracy_function
+        self._accuracy_func: ACCURACY_FUNCTION = (
+            _calculate_accuracy if accuracy_function is None else accuracy_function
+        )
 
     def _color_from_player_name(self, player_name: str) -> Color:
         if self.metadata["White"] == player_name:
@@ -64,9 +69,13 @@ class AnalysedGame:
     def _enrich_metadata(self, game_headers) -> None:
         game_headers["Annotator"] = "https://github.com/EdmundMartin/blunder_wunder"
         accuracy = self.accuracy()
-        game_headers["Accuracy"] = f"White Accuracy Score: {accuracy['white']}%, Black Accuracy Score: {accuracy['black']}%"
+        game_headers[
+            "Accuracy"
+        ] = f"White Accuracy Score: {accuracy['white']}%, Black Accuracy Score: {accuracy['black']}%"
 
-    def _list_moves_of_type(self, classification: MoveClassification, player_name: Optional[str] = None):
+    def _list_moves_of_type(
+        self, classification: MoveClassification, player_name: Optional[str] = None
+    ):
         matched_color = (
             None if not player_name else self._color_from_player_name(player_name)
         )
@@ -87,21 +96,29 @@ class AnalysedGame:
             if move.classification >= MoveClassification.INACCURACY:
                 node.comment = f"{move.played_move} was a {move.classification.to_friendly_string().lower()}, suggested engine move was {move.engine_move}"
             node.set_eval(move.pov)
-        with open(filename, 'w') as outfile:
+        with open(filename, "w") as outfile:
             outfile.write(str(game))
 
     def write_to_pgn_name_from_metadata(self):
         filename = pgn_title_from_metadata(self.metadata)
         self.write_to_pgn(filename)
 
-    def list_inaccuracies(self, player_name: Optional[str] = None) -> List[AnalysedMove]:
-        return self._list_moves_of_type(MoveClassification.INACCURACY, player_name=player_name)
+    def list_inaccuracies(
+        self, player_name: Optional[str] = None
+    ) -> List[AnalysedMove]:
+        return self._list_moves_of_type(
+            MoveClassification.INACCURACY, player_name=player_name
+        )
 
     def list_mistakes(self, player_name: Optional[str] = None) -> List[AnalysedMove]:
-        return self._list_moves_of_type(MoveClassification.MISTAKE, player_name=player_name)
+        return self._list_moves_of_type(
+            MoveClassification.MISTAKE, player_name=player_name
+        )
 
     def list_blunders(self, player_name: Optional[str] = None) -> List[AnalysedMove]:
-        return self._list_moves_of_type(MoveClassification.BLUNDER, player_name=player_name)
+        return self._list_moves_of_type(
+            MoveClassification.BLUNDER, player_name=player_name
+        )
 
     def accuracy(self) -> AccuracySummary:
         return self._accuracy_func(self.moves)

@@ -16,7 +16,7 @@ class MoveClassification(IntEnum):
             MoveClassification.GOOD_MOVE: "Good Move",
             MoveClassification.INACCURACY: "Inaccuracy",
             MoveClassification.MISTAKE: "Mistake",
-            MoveClassification.BLUNDER: "Blunder"
+            MoveClassification.BLUNDER: "Blunder",
         }[self]
 
 
