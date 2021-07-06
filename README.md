@@ -5,7 +5,6 @@ what online game analyzers provide. A compatible UCI engine is required to run a
 
 ```python
 from blunder_wunder import GameAnalysis
-from 
 
 analyzer = GameAnalysis("/usr/local/bin/stockfish", depth=20)
 analyzed_game = analyzer.analyse_game_from_pgn(
